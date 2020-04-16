@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -126,12 +127,12 @@ public class SimpleHouseModel
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setSerializationInclusion(Include.NON_EMPTY);
         // pretty printing
-        // mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        //mapper.enable(SerializationFeature.INDENT_OUTPUT);
         // exploit existing JAXB annotations
         // ad interim solution to be removed when migration to Jackson will
         // complete.
-        //mapper.registerModule(new JaxbAnnotationModule());
-        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(
+                TypeFactory.defaultInstance());
         mapper.setAnnotationIntrospector(introspector);
     }
 

@@ -9,6 +9,7 @@ Export-Package: it.polito.elite.dog.core.housemodel.api;version="1.2.0"
 Import-Package: com.fasterxml.jackson.annotation;version="2.9.8",
  com.fasterxml.jackson.core;version="2.9.8",
  com.fasterxml.jackson.databind;version="2.9.8",
+ com.fasterxml.jackson.databind.type;version="2.9.8",
  com.fasterxml.jackson.dataformat.xml;version="2.9.8",
  com.fasterxml.jackson.module.jaxb;version="2.9.8",
  it.polito.elite.dog.core.library.jaxb;version="1.1.1",
