@@ -58,6 +58,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashSet;
@@ -71,6 +73,14 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 /**
  * This class implements the HouseModel interface.<br/>
@@ -127,7 +137,7 @@ public class SimpleHouseModel
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.setSerializationInclusion(Include.NON_EMPTY);
         // pretty printing
-        //mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        // mapper.enable(SerializationFeature.INDENT_OUTPUT);
         // exploit existing JAXB annotations
         // ad interim solution to be removed when migration to Jackson will
         // complete.
@@ -717,24 +727,35 @@ public class SimpleHouseModel
 
         try
         {
-            // open a file writer on the destination file
-            FileWriter writer = new FileWriter(this.configurationPath);
-            // wrap the file writer with an XMLStreamWriter
+
+            // write the output as a string
+            StringWriter writer = new StringWriter();
+            // wrap the string writer with an XMLStreamWriter
             XMLStreamWriter xmlWriter = xmlOutputFactory
                     .createXMLStreamWriter(writer);
             // write the value
             ((XmlMapper) this.mapper).writeValue(xmlWriter,
                     this.xmlConfiguration);
+
+            // pretty printing - needed to improve readability of generated XML
+            // file.
+
+            // create an XML transformer
+            Transformer t = TransformerFactory.newInstance().newTransformer();
+            // ident elements
+            t.setOutputProperty(OutputKeys.INDENT, "yes");
+            // transform the output string and write it on the configuration
+            // file.
+            t.transform(
+                    new StreamSource(
+                            new StringReader(writer.getBuffer().toString())),
+                    new StreamResult(new File(this.configurationPath)));
         }
-        catch (IOException e)
+        catch (IOException | XMLStreamException
+                | TransformerFactoryConfigurationError | TransformerException e)
         {
             this.logger.log(LogService.LOG_ERROR,
                     "Error while writing XML file " + e);
-        }
-        catch (XMLStreamException e)
-        {
-            this.logger.log(LogService.LOG_ERROR,
-                    "Error while writing XML model " + e);
         }
 
     }
