@@ -18,11 +18,12 @@
 package it.polito.elite.dog.core.housemodel.simple;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 import it.polito.elite.dog.core.housemodel.api.EnvironmentModel;
 import it.polito.elite.dog.core.housemodel.api.HouseModel;
@@ -129,7 +130,9 @@ public class SimpleHouseModel
         // exploit existing JAXB annotations
         // ad interim solution to be removed when migration to Jackson will
         // complete.
-        mapper.registerModule(new JaxbAnnotationModule());
+        //mapper.registerModule(new JaxbAnnotationModule());
+        AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+        mapper.setAnnotationIntrospector(introspector);
     }
 
     /**
